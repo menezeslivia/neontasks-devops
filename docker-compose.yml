@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  # Back-end (Node.js / Express)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: neon_planner_api
+    env_file: .env
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - DATABASE_URL=${DATABASE_URL}
+      - PGSSLMODE=${PGSSLMODE}
+      - PORT=3000
+    ports:
+      # Mapeamos para 4000 no host para evitar conflitos com serviços que já usam 3000
+      - "4000:3000"
+    volumes:
+      - ./backend:/usr/src/app
+    # Usamos apenas o Postgres remoto (Render) definido em .env -> DATABASE_URL
+    # Não dependemos de um serviço de DB local.
+    # Para desenvolvimento local, certifique-se de ter `DATABASE_URL` apontando
+    # para o banco do Render ou para outro serviço acessível.
+    # O container usará o CMD do Dockerfile (npm start). Mantemos um passo de
+    # instalação no startup caso haja volume montado que sobrescreva node_modules.
+    command: sh -c "npm install && npm start"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/tarefas || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Front-end (React build + Nginx)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: neon_planner_ui
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  db_data:

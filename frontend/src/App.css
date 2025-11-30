@@ -1,0 +1,312 @@
+/* Definição de fontes (garantir que estejam disponíveis no ambiente) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=Montserrat:wght@400;500;600&display=swap');
+
+/* --- VARIÁVEIS DE TEMA --- */
+
+:root {
+  /* Cores Globais */
+  --cor-roxo-principal: #9E00E9;
+  --cor-rosa-destaque: #FB5BA8; /* Usado no Figma: #FB5BA8 */
+  --cor-degrade-titulo: linear-gradient(90deg, #FB5BA8, #BF3AFF);
+
+  /* Tema Claro (Padrão) */
+  --cor-fundo-principal: #FFFFFF;
+  --cor-fundo-card: #F8F8F8;
+  --cor-texto-principal: #000000;
+  --cor-texto-secundario: #555555;
+  --cor-borda-input: #CCCCCC;
+  /* Fundo da página fora do card */
+  --page-bg: #ffffff;
+}
+
+/* Tema Escuro: Sobrescreve as variáveis quando a classe .dark-mode é aplicada */
+.dark-mode {
+  --cor-fundo-principal: #1A1B26; /* Fundo escuro do seu Figma */
+  --cor-fundo-card: #2B2C3A;
+  --cor-texto-principal: #FFFFFF;
+  --cor-texto-secundario: #AAAAAA;
+  --cor-borda-input: #444455;
+  --page-bg: #0f1014;
+}
+
+/* --- ESTILIZAÇÃO GERAL E LAYOUT --- */
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Montserrat', sans-serif;
+  transition: background-color 0.3s, color 0.3s;
+  /* Fundo da página separado do card; usa variável para alternar no tema */
+  background-color: var(--page-bg);
+}
+
+.app-container {
+  min-height: 100vh;
+  padding: 40px 20px;
+  color: var(--cor-texto-principal);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch; /* permite que os filhos ocupem toda a largura disponível */
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1100px; /* largura máxima do app para telas grandes */
+  margin: 0 auto; /* centraliza o app na página */
+  background-color: var(--cor-fundo-principal); /* card com a cor do tema */
+  border-radius: 10px;
+  padding-top: 48px;
+  padding-bottom: 48px;
+  position: relative;
+}
+
+/* --- ESTILO DO CABEÇALHO (HEADER) --- */
+
+header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+header h1 {
+  font-family: 'Inter Extra Bold', sans-serif;
+  font-size: 2.5rem;
+  /* Aplica o degradê do Figma */
+  background-image: var(--cor-degrade-titulo);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+  margin-bottom: 5px;
+}
+
+header p {
+  color: var(--cor-texto-secundario);
+  margin: 0;
+  font-size: 1rem;
+}
+
+.theme-toggle {
+  /* Posicionamos o toggle relativo ao `.app-container` (não ao `header`) */
+  position: absolute;
+  top: 18px;
+  right: 18px; /* afastamento consistente do canto do card */
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.2s;
+  z-index: 20; /* garante que fique acima do conteúdo */
+}
+.theme-toggle:hover {
+  transform: scale(1.1);
+}
+
+/* --- FORMULÁRIO DE ADIÇÃO --- */
+
+.add-task-form {
+  display: flex;
+  width: 100%;
+  max-width: 900px; /* Aumentado para ocupar mais espaço em telas grandes */
+  margin-bottom: 20px;
+  background-color: var(--cor-fundo-card);
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.add-task-form input {
+  flex-grow: 1;
+  padding: 12px 15px;
+  border: 1px solid var(--cor-borda-input);
+  border-right: none;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+  font-size: 1rem;
+  background-color: transparent;
+  color: var(--cor-texto-principal);
+  outline: none;
+}
+
+.purple-button {
+  background-color: var(--cor-roxo-principal);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  font-weight: 600;
+  cursor: pointer;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.purple-button:hover {
+  background-color: var(--cor-rosa-destaque); /* Destaque Rosa no hover */
+}
+
+/* --- BARRA DE STATUS (Contadores) --- */
+
+.status-bar {
+  width: 100%;
+  max-width: 900px; /* Mantém alinhamento com o formulário */
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 25px;
+    font-size: 0.9rem;
+    color: var(--cor-texto-secundario);
+}
+
+.pending-count {
+    font-weight: 500;
+}
+
+.pink-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background-color: var(--cor-rosa-destaque);
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+/* --- LISTA DE TAREFAS --- */
+
+.task-list {
+  width: 100%;
+  max-width: 900px; /* Mantém alinhamento com formulário e status */
+}
+
+/* --- RESPONSIVIDADE --- */
+@media (max-width: 768px) {
+  .app-container {
+    padding: 20px 12px;
+  }
+
+  header h1 {
+    font-size: 1.8rem;
+  }
+
+  .add-task-form, .status-bar, .task-list {
+    max-width: 100%;
+  }
+}
+
+@media (min-width: 1200px) {
+  .app-container {
+    padding-left: 80px;
+    padding-right: 80px;
+  }
+}
+
+.task-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  margin-bottom: 10px;
+  background-color: var(--cor-fundo-card);
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s;
+}
+
+.task-item.completed {
+  opacity: 0.7;
+  border-left: 5px solid var(--cor-rosa-destaque);
+}
+
+.task-text-container {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    cursor: pointer;
+}
+
+.task-text {
+  margin-left: 10px;
+}
+
+.task-item.completed .task-text {
+  text-decoration: line-through;
+  color: var(--cor-texto-secundario);
+}
+
+/* --- Checkbox Personalizado --- */
+
+.custom-checkbox {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--cor-roxo-principal);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.custom-checkbox.checked {
+    background-color: var(--cor-rosa-destaque);
+    border-color: var(--cor-rosa-destaque);
+    box-shadow: 0 0 5px var(--cor-rosa-destaque); /* Efeito neon */
+}
+
+/* --- Botão de Excluir --- */
+
+.delete-button {
+  background: none;
+  border: none;
+  color: var(--cor-roxo-principal);
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: color 0.2s;
+}
+
+.delete-button:hover {
+  color: var(--cor-rosa-destaque);
+}
+
+/* --- Empty State (Sem Tarefas) --- */
+
+.empty-state {
+  text-align: center;
+  margin-top: 50px;
+}
+
+/* Simulação do círculo pontilhado do Figma */
+.loading-spinner {
+  width: 80px;
+  height: 80px;
+  border: 4px dotted var(--cor-roxo-principal);
+  border-radius: 50%;
+  margin: 0 auto 20px auto;
+  opacity: 0.8;
+}
+
+/* Mensagem de erro simples abaixo do formulário */
+.error-message {
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto 16px auto;
+  color: #ff4d4f;
+  background: rgba(255, 77, 79, 0.06);
+  border: 1px solid rgba(255, 77, 79, 0.12);
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+/* Input inline de edição dentro do card deve seguir o tema */
+.task-text-container input {
+  background: transparent;
+  border: 1px solid var(--cor-borda-input);
+  color: var(--cor-texto-principal);
+  padding: 8px 10px;
+  border-radius: 6px;
+}
+
+/* Botão apenas com emoji (sem fundo) */
+.icon-button {
+  background: none;
+  border: none;
+  padding: 6px 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+.icon-button:hover { transform: scale(1.05); }

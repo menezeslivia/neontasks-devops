@@ -1,0 +1,19 @@
+# backend/.gitignore - padrões específicos para o backend
+
+# Node modules
+/node_modules/
+
+# Environment
+.env
+
+# Logs
+npm-debug.log*
+logs/
+
+# Coverage / build
+coverage/
+build/
+
+# Database files
+*.sqlite
+*.db
