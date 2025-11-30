@@ -58,7 +58,9 @@ async function ensureConnection() {
     if (ok) return { ok: true, using: currentKnex.__db_source || 'unknown' };
   }
 
-  const useExternal = isProductionDeployment() && !!EXTERNAL_DATABASE_URL;
+  // Use external DB whenever a DATABASE_URL is provided (Render production),
+  // otherwise fall back to local docker-compose DB.
+  const useExternal = !!EXTERNAL_DATABASE_URL;
 
   if (useExternal) {
     try {

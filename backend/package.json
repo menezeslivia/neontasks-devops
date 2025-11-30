@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "migrate": "npx knex migrate:latest --knexfile ./knexfile.js"
+    "migrate": "npx knex migrate:latest --knexfile ./knexfile.js",
+    "migrate:prod": "NODE_ENV=production npx knex migrate:latest --knexfile ./knexfile.js --env production"
   },
   "dependencies": {
     "express": "^4.18.2",
