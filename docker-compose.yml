@@ -1,4 +1,4 @@
-version: '3.8'
+
 
 services:
   # Back-end (Node.js / Express)
@@ -10,20 +10,14 @@ services:
     env_file: .env
     environment:
       - NODE_ENV=${NODE_ENV}
-      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_URL=${DATABASE_URL:-postgres://postgres:postgres@db:5432/neon_tasks}
       - PGSSLMODE=${PGSSLMODE}
       - PORT=3000
+    depends_on:
+      - db
     ports:
-      # Mapeamos para 4000 no host para evitar conflitos com serviços que já usam 3000
       - "4000:3000"
-    volumes:
-      - ./backend:/usr/src/app
-    # Usamos apenas o Postgres remoto (Render) definido em .env -> DATABASE_URL
-    # Não dependemos de um serviço de DB local.
-    # Para desenvolvimento local, certifique-se de ter `DATABASE_URL` apontando
-    # para o banco do Render ou para outro serviço acessível.
-    # O container usará o CMD do Dockerfile (npm start). Mantemos um passo de
-    # instalação no startup caso haja volume montado que sobrescreva node_modules.
+
     command: sh -c "npm install && npm start"
     restart: unless-stopped
     healthcheck:
@@ -44,5 +38,79 @@ services:
       - backend
     restart: unless-stopped
 
+  # Serviço de banco de dados Postgres adicionado para permitir execução completa via Docker Compose
+  db:
+    image: postgres:15-alpine
+    container_name: neon_planner_db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=neon_tasks
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Zabbix stack (Postgres DB + Server + Web UI + Agent)
+  zabbix-db:
+    image: postgres:15-alpine
+    container_name: neon_zabbix_db
+    environment:
+      - POSTGRES_USER=zabbix
+      - POSTGRES_PASSWORD=zabbix
+      - POSTGRES_DB=zabbix
+    volumes:
+      - zabbix_db_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  zabbix-server:
+    image: zabbix/zabbix-server-pgsql:latest
+    container_name: neon_zabbix_server
+    environment:
+      - DB_SERVER_HOST=zabbix-db
+      - POSTGRES_DB=zabbix
+      - POSTGRES_USER=zabbix
+      - POSTGRES_PASSWORD=zabbix
+    depends_on:
+      - zabbix-db
+    restart: unless-stopped
+
+  zabbix-web:
+    image: zabbix/zabbix-web-nginx-pgsql:latest
+    container_name: neon_zabbix_web
+    ports:
+      - "8080:8080"
+    environment:
+      - ZBX_SERVER_HOST=zabbix-server
+      - DB_SERVER_HOST=zabbix-db
+      - POSTGRES_DB=zabbix
+      - POSTGRES_USER=zabbix
+      - POSTGRES_PASSWORD=zabbix
+    depends_on:
+      - zabbix-server
+    restart: unless-stopped
+
+  zabbix-agent:
+    image: zabbix/zabbix-agent:latest
+    container_name: neon_zabbix_agent
+    environment:
+      - ZBX_SERVER_HOST=zabbix-server
+      - ZBX_HOSTNAME=neon_planner_agent
+    depends_on:
+      - zabbix-server
+    restart: unless-stopped
+
 volumes:
   db_data:
+  zabbix_db_data:
