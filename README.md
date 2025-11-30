@@ -12,6 +12,15 @@ tarefas completo composto por:
 
 ------------------------------------------------------------------------
 
+## 🌐 Links do Deploy
+
+  Serviço                 URL
+  ----------------------- ------------------------------------------
+  **Frontend (Vercel)**   https://neontasks-devops-kc83.vercel.app
+  **Backend (Render)**    https://neontasks-devops-1.onrender.com
+
+------------------------------------------------------------------------
+
 ## 📁 Estrutura do Projeto
 
     /
