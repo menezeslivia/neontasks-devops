@@ -13,12 +13,12 @@ if (!dbUrl) console.warn('Nenhuma DATABASE_URL / POSTGRES_URL configurada; a API
 const tarefasRouter = require('./routes/tarefas.routes');
 app.use('/api/tarefas', tarefasRouter);
 
-// Aguarda confirmação da conexão com o banco antes de iniciar o servidor.
-// A função `ensureConnection` tentará conectar ao banco local (serviço `db`) primeiro
-// e fará failover para `DATABASE_URL` caso o local não responda.
+// A conexão com o DB é feita explicitamente quando o servidor é iniciado localmente.
+// Para deploy serverless (Vercel) exportamos o `app` e deixamos o runtime
+// instanciar conexões sob demanda.
 const db = require('./db/knex');
 
-(async function start() {
+async function startServer() {
     try {
         const result = await db.ensureConnection();
         if (!result.ok) {
@@ -30,8 +30,15 @@ const db = require('./db/knex');
         console.error('Erro durante a verificação da conexão com o DB:', err && err.message);
     }
 
-    // Inicia o servidor Express
     app.listen(port, () => {
         console.log(`Servidor rodando em http://localhost:${port}`);
     });
-})();
+}
+
+// Se este arquivo for executado diretamente (node server.js), iniciar o servidor.
+if (require.main === module) {
+    startServer();
+}
+
+// Exportar o app Express para uso em serverless (Vercel) e testes.
+module.exports = app;
