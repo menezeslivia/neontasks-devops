@@ -1,15 +1,18 @@
-// Vercel handler that ensures DB conexão antes de delegar ao Express app.
+// Vercel handler: wrap Express app with serverless-http and ensure DB connection
+const serverless = require('serverless-http');
 const app = require('../backend/server');
 const db = require('../backend/db/knex');
 
-module.exports = async function handler(req, res) {
+const handler = serverless(app);
+
+module.exports = async function (req, res) {
 	try {
 		await db.ensureConnection();
 	} catch (err) {
 		console.error('Erro ao assegurar conexão com DB antes de request:', err && err.message);
-		// Continuar mesmo que a conexão falhe; o app pode retornar erros adequados.
+		// proceed - the app will handle errors
 	}
 
-	// Delegar a requisição para o Express app
-	return app(req, res);
+	// serverless-http returns a handler compatible with (req,res)
+	return handler(req, res);
 };
