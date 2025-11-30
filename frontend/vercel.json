@@ -5,6 +5,6 @@
   ],
   "routes": [],
   "env": {
-    "VITE_API_URL": "https://neontasks-devops.vercel.app"
+    "VITE_API_URL": "https://neontasks-devops-1.onrender.com"
   }
 }
