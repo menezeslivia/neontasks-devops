@@ -1,6 +1,13 @@
 import axios from 'axios';
 
 const resolveBaseUrl = () => {
+  // Se a variável de ambiente Vite for fornecida, use-a (ex.: https://neontasks-devops.vercel.app)
+  const envUrl = import.meta.env.VITE_API_URL;
+  if (envUrl && envUrl.trim() !== '') {
+    // garante que não haja barra duplicada
+    return `${envUrl.replace(/\/$/, '')}/api/tarefas`;
+  }
+
   if (typeof window !== 'undefined') {
     const host = window.location.hostname;
     if (host === 'localhost' || host === '127.0.0.1') {
@@ -9,8 +16,8 @@ const resolveBaseUrl = () => {
       return 'http://localhost:4000/api/tarefas';
     }
   }
-  // Em produção (quando servido por Nginx), use caminho relativo para que o browser
-  // faça requisições à mesma origem (/api/tarefas). Isso também funciona via reverse-proxy.
+
+  // Em produção (quando servido pela mesma origem), use caminho relativo.
   return '/api/tarefas';
 };
 

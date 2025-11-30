@@ -5,6 +5,6 @@
   ],
   "routes": [],
   "env": {
-    "VITE_API_URL": ""
+    "VITE_API_URL": "https://neontasks-devops.vercel.app"
   }
 }
