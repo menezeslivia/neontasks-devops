@@ -17,18 +17,31 @@ function createKnexInstance(connectionString, ssl = false) {
 }
 
 let currentKnex = null;
+const proxyTarget = function () {};
 
-const dbProxy = new Proxy(function () {}, {
+const dbProxy = new Proxy(proxyTarget, {
   apply(_target, thisArg, args) {
+    if (!currentKnex) throw new Error('DB not initialized yet');
     return currentKnex.apply(thisArg, args);
   },
   get(_target, prop) {
-    const val = currentKnex[prop];
-    if (typeof val === 'function') return val.bind(currentKnex);
-    return val;
+    // Prefer properties/methods from the active knex instance
+    if (currentKnex) {
+      const val = currentKnex[prop];
+      if (typeof val === 'function') return val.bind(currentKnex);
+      if (val !== undefined) return val;
+    }
+    // Fallback to proxy target (where we store helper props like ensureConnection)
+    return proxyTarget[prop];
   },
   set(_target, prop, value) {
-    currentKnex[prop] = value;
+    // If knex instance exists, set on it; otherwise set on proxy target so assignments
+    // like `module.exports.ensureConnection = ensureConnection` don't fail during init.
+    if (currentKnex) {
+      currentKnex[prop] = value;
+    } else {
+      proxyTarget[prop] = value;
+    }
     return true;
   },
 });
