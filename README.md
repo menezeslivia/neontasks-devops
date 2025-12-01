@@ -168,6 +168,14 @@ E toda a infraestrutura será provisionada automaticamente.
 
 ------------------------------------------------------------------------
 
+## 🤩 Estudantes Responsáveis
+
+- Clara Heloísa Pereira dos Santos (Matricula: 01710826)
+- Fernanda Gabrielli de Oliveira Magalhães (Matricula: 01710910)
+- Lívia Janine Menezes Cabral da Silva (Matricula: 01712089)
+- Maria Fernanda Trevizane Buonafina (Matrícula: 01711101)
+
+------------------------------------------------------------------------
 ## 🤝 Contribuição
 
 Fique à vontade para enviar PRs ou sugestões!
